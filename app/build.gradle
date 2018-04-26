@@ -32,7 +32,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    kapt "com.android.databinding:compiler:3.1.2"
+    kapt "com.android.databinding:compiler:$compiler_version"
     implementation "com.android.support:design:26.1.0"
     implementation "com.android.support:cardview-v7:26.1.0"
     implementation "com.squareup.retrofit2:retrofit:2.3.0"
@@ -43,4 +43,6 @@ dependencies {
     implementation "org.koin:koin-android-architecture:$koin_version"
     implementation "com.facebook.stetho:stetho:1.5.0"
     implementation "com.facebook.stetho:stetho-okhttp3:1.5.0"
+    implementation "com.mikepenz:fastadapter:$fast_adapter_version"
+    implementation "com.mikepenz:fastadapter-commons:$fast_adapter_version"
 }
