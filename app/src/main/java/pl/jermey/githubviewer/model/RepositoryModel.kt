@@ -1,5 +1,7 @@
 package pl.jermey.githubviewer.model
 
+import android.databinding.BaseObservable
+
 data class RepositoryModel(val id: Long,
                            val name: String,
                            val fullName: String,
@@ -7,4 +9,4 @@ data class RepositoryModel(val id: Long,
                            val description: String,
                            val stargazersCount: Long,
                            val watchersCount: Long,
-                           val forksCount: Long)
+                           val forksCount: Long): BaseObservable()

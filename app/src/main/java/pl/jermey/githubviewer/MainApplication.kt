@@ -6,14 +6,14 @@ import org.koin.android.ext.android.startKoin
 import org.koin.dsl.module.Module
 import pl.jermey.githubviewer.repository.ApiModule
 import pl.jermey.githubviewer.rx.RxModule
+import pl.jermey.githubviewer.util.ViewModelInjector
 
 /**
  * Created by Jermey on 25.04.2018.
  */
 class MainApplication : Application() {
 
-    private val appModules:List<Module> = listOf(ApiModule(), RxModule())
-
+    private val appModules: List<Module> = listOf(ApiModule(), RxModule(), ViewModelInjector())
 
     override fun onCreate() {
         super.onCreate()
