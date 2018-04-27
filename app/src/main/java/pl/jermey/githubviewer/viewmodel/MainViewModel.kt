@@ -19,16 +19,33 @@ class MainViewModel(private val webService: RestService) : ViewModel() {
     private val itemAdapter = ItemAdapter<IItem<*, *>>(ComparableItemListImpl<IItem<*, *>>(comparator))
     private val footerAdapter: ItemAdapter<IItem<*, *>> = ItemAdapter()
 
-    var empty: ObservableField<Boolean> = ObservableField(true)
+    val empty: ObservableField<Boolean> = ObservableField(true)
+    private var loading = false
+    var currentPage = 0
+    var totalItemsCount = 0L
     val adapter: FastAdapter<IItem<*, *>> = FastAdapter.with(listOf(itemAdapter, footerAdapter))
 
     fun search(query: String, page: Int = 0) {
+        if (loading || query.isBlank()) return
+        loading = true
+        currentPage = if (page == 0) {
+            itemAdapter.clear()
+            0
+        } else {
+            page
+        }
         footerAdapter.add(LoadingItem())
-        webService.search(query, page).subscribe({
-            empty.set(false)
+        empty.set(false)
+        webService.search(query, currentPage).subscribe({
+            loading = false
             footerAdapter.clear()
+            totalItemsCount = it.third
             itemAdapter.add(it.first.map { RepositoryItem(it) })
             itemAdapter.add(it.second.map { UserItem(it) })
+            currentPage++
+        }, {
+            it.printStackTrace()
+            loading = false
         })
     }
 

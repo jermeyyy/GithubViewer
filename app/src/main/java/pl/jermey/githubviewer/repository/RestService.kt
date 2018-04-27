@@ -12,8 +12,11 @@ import pl.jermey.githubviewer.rx.schedule
  * Created by Jermey on 25.04.2018.
  */
 class RestService(private val apiService: GithubApi, private val schedulerProvider: ApplicationSchedulerProvider) {
-    fun search(query: String, page: Int): Observable<Pair<List<RepositoryModel>, List<UserModel>>> {
-        val zipper = BiFunction<SearchResults<RepositoryModel>, SearchResults<UserModel>, Pair<List<RepositoryModel>, List<UserModel>>> { r, u -> Pair(r.items, u.items) }
+
+    private val zipper = BiFunction<SearchResults<RepositoryModel>, SearchResults<UserModel>, Triple<List<RepositoryModel>, List<UserModel>, Long>>
+    { r, u -> Triple(r.items, u.items, r.totalCount + u.totalCount) }
+
+    fun search(query: String, page: Int): Observable<Triple<List<RepositoryModel>, List<UserModel>, Long>> {
         return Observable.zip(apiService.searchRepositories(query, page), apiService.searchUsers(query, page), zipper)
                 .schedule(schedulerProvider)
     }
