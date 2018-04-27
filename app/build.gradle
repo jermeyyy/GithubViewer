@@ -45,4 +45,6 @@ dependencies {
     implementation "com.facebook.stetho:stetho-okhttp3:1.5.0"
     implementation "com.mikepenz:fastadapter:$fast_adapter_version"
     implementation "com.mikepenz:fastadapter-commons:$fast_adapter_version"
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
 }

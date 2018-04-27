@@ -13,6 +13,8 @@ class UserItem(private val userModel: UserModel) : KAbstractItem<UserItem, UserI
         holder.binding.user = userModel
     }
 
+    override fun getIdentifier() = userModel.id
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding: UserItemBinding = UserItemBinding.bind(itemView)
     }

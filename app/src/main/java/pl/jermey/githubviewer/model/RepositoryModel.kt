@@ -9,4 +9,4 @@ data class RepositoryModel(val id: Long,
                            val description: String,
                            val stargazersCount: Long,
                            val watchersCount: Long,
-                           val forksCount: Long): BaseObservable()
+                           val forksCount: Long) : BaseObservable()

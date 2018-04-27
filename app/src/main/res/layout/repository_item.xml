@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -9,15 +11,81 @@
 
     </data>
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/half_padding"
+        android:layout_marginRight="@dimen/half_padding"
+        android:layout_marginTop="@dimen/half_padding">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{repository.name}" />
+            android:orientation="vertical"
+            android:padding="@dimen/half_padding">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:urlSrc="@{repository.owner.avatarUrl}"
+                    tools:src="@mipmap/ic_launcher" />
+
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/half_padding"
+                    android:text="@{repository.owner.login}"
+                    android:textSize="13sp"
+                    tools:text="testUser" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_code_fork"
+                    android:drawablePadding="@dimen/quarter_padding"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/quarter_padding"
+                    android:paddingRight="@dimen/quarter_padding"
+                    android:text="@{String.valueOf(repository.forksCount)}"
+                    tools:text="123" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_star"
+                    android:drawablePadding="@dimen/quarter_padding"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/quarter_padding"
+                    android:paddingRight="@dimen/quarter_padding"
+                    android:text="@{String.valueOf(repository.stargazersCount)}"
+                    tools:text="123" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{repository.name}"
+                android:textSize="18sp"
+                tools:text="testRepository" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/quarter_padding"
+                android:text="@{repository.description}"
+                android:textSize="13sp"
+                tools:text="testRepository description" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </layout>

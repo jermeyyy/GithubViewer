@@ -13,6 +13,8 @@ class RepositoryItem(private val repository: RepositoryModel) : KAbstractItem<Re
         holder.binding.repository = repository
     }
 
+    override fun getIdentifier() = repository.id
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding: RepositoryItemBinding = RepositoryItemBinding.bind(itemView)
     }
