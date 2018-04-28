@@ -3,13 +3,16 @@ package pl.jermey.githubviewer.repository
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import org.koin.dsl.context.Context
 import org.koin.dsl.module.Module
 import org.koin.dsl.module.applicationContext
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
@@ -33,6 +36,7 @@ class ApiModule : Module {
                 .connectTimeout(60L, TimeUnit.SECONDS)
                 .readTimeout(60L, TimeUnit.SECONDS)
                 .addNetworkInterceptor(StethoInterceptor())
+                .addInterceptor(AuthenticationInterceptor("amVybWV5eXk="))
                 .build()
     }
 
@@ -46,6 +50,20 @@ class ApiModule : Module {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build()
         return retrofit.create(T::class.java)
+    }
+
+    inner class AuthenticationInterceptor(private val authToken: String) : Interceptor {
+
+        @Throws(IOException::class)
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val original = chain.request()
+
+            val builder = original.newBuilder()
+                    .header("Authorization", authToken)
+
+            val request = builder.build()
+            return chain.proceed(request)
+        }
     }
 
 }
