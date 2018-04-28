@@ -20,23 +20,25 @@ class MainViewModel(private val webService: RestService) : ViewModel() {
     private val footerAdapter: ItemAdapter<IItem<*, *>> = ItemAdapter()
 
     val empty: ObservableField<Boolean> = ObservableField(true)
+    val emptyMessage: ObservableField<String> = ObservableField("No results")
+    var query: String = ""
     private var loading = false
     var currentPage = 0
     var totalItemsCount = 0L
     val adapter: FastAdapter<IItem<*, *>> = FastAdapter.with(listOf(itemAdapter, footerAdapter))
 
     fun search(query: String, page: Int = 0) {
-        if (loading || query.isBlank()) return
+        if (loading || query.isBlank() || (query == this.query && page == 0)) return
         loading = true
-        currentPage = if (page == 0) {
+        this.query = query
+        if (page == 0) {
             itemAdapter.clear()
-            0
-        } else {
-            page
+            currentPage = 0
+            totalItemsCount = 0L
         }
         footerAdapter.add(LoadingItem())
         empty.set(false)
-        webService.search(query, currentPage).subscribe({
+        webService.search(this.query, currentPage).subscribe({
             loading = false
             footerAdapter.clear()
             totalItemsCount = it.third
@@ -46,6 +48,12 @@ class MainViewModel(private val webService: RestService) : ViewModel() {
         }, {
             it.printStackTrace()
             loading = false
+            currentPage = 0
+            totalItemsCount = 0L
+            footerAdapter.clear()
+            itemAdapter.clear()
+            empty.set(true)
+            emptyMessage.set("Connection error")
         })
     }
 

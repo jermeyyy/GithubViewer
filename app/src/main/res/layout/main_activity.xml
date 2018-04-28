@@ -52,7 +52,7 @@
             android:drawablePadding="@dimen/half_padding"
             android:drawableTop="@mipmap/ic_launcher"
             android:gravity="center"
-            android:text="No results"
+            android:text="@{viewModel.emptyMessage}"
             android:visibility="@{viewModel.empty ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
