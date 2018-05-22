@@ -12,8 +12,8 @@ import retrofit2.http.Query
  */
 interface GithubApi {
     @GET("search/repositories")
-    fun searchRepositories(@Query("q") query: String, @Query("page") page: Int = 0): Observable<SearchResults<RepositoryModel>>
+    fun searchRepositories(@Query("q") query: String, @Query("page") page: Int): Observable<SearchResults<RepositoryModel>>
 
     @GET("search/users")
-    fun searchUsers(@Query("q") query: String, @Query("page") page: Int = 0): Observable<SearchResults<UserModel>>
+    fun searchUsers(@Query("q") query: String, @Query("page") page: Int): Observable<SearchResults<UserModel>>
 }

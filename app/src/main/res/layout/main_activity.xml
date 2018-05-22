@@ -11,6 +11,10 @@
             name="viewModel"
             type="pl.jermey.githubviewer.viewmodel.MainViewModel" />
 
+        <variable
+            name="adapter"
+            type="com.mikepenz.fastadapter.FastAdapter" />
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -39,7 +43,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:adapter="@{viewModel.adapter}"
+            android:adapter="@{adapter}"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchWrapper" />

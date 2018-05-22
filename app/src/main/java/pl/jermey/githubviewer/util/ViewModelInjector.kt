@@ -9,5 +9,4 @@ class ViewModelInjector : Module {
     override fun invoke() = applicationContext {
         viewModel { MainViewModel(get()) }
     }.invoke()
-
 }

@@ -9,6 +9,7 @@ import okhttp3.Response
 import org.koin.dsl.context.Context
 import org.koin.dsl.module.Module
 import org.koin.dsl.module.applicationContext
+import pl.jermey.githubviewer.rx.SchedulerProvider
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,17 +20,27 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Jermey on 25.04.2018.
  */
-class ApiModule : Module {
+class ApiModule(private val test: Boolean = false) : Module {
 
     companion object {
         const val API_ENDPOINT = "https://api.github.com/"
     }
 
-    override fun invoke(): Context = applicationContext {
-        bean { createOkHttpClient() }
-        bean { createWebService<GithubApi>(get(), API_ENDPOINT) }
-        bean { RestService(get(), get()) }
-    }.invoke()
+    override fun invoke(): Context {
+        val schedulerType = if (test) "testScheduler" else "appScheduler"
+        return applicationContext {
+            bean { createOkHttpClient() }
+            bean { createWebService<GithubApi>(get(), API_ENDPOINT) }
+            bean { getWebService(get(), get(schedulerType), test) } bind GithubService::class
+        }.invoke()
+    }
+
+    private fun getWebService(apiService: GithubApi, schedulerProvider: SchedulerProvider, test: Boolean): GithubService {
+        return when (test) {
+            false -> RestService(apiService, schedulerProvider)
+            true -> TestRestService(schedulerProvider)
+        }
+    }
 
     fun createOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()

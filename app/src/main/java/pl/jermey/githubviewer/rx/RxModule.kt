@@ -10,9 +10,10 @@ import org.koin.dsl.module.applicationContext
  */
 class RxModule : Module {
     override fun invoke(): Context = applicationContext {
-        bean { ApplicationSchedulerProvider() } bind (SchedulerProvider::class)
+        bean("appScheduler") { ApplicationSchedulerProvider() } bind (SchedulerProvider::class)
+        bean("testScheduler") { TestSchedulerProvider() } bind (SchedulerProvider::class)
     }.invoke()
 }
 
-fun <T> Observable<T>.schedule(schedulerProvider: SchedulerProvider): Observable<T> = this.subscribeOn(schedulerProvider.io())
+inline fun <reified T> Observable<T>.schedule(schedulerProvider: SchedulerProvider): Observable<T> = this.subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())

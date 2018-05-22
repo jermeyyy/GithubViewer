@@ -2,59 +2,71 @@ package pl.jermey.githubviewer.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.IItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.utils.ComparableItemListImpl
-import pl.jermey.githubviewer.repository.RestService
-import pl.jermey.githubviewer.widget.items.LoadingItem
-import pl.jermey.githubviewer.widget.items.RepositoryItem
-import pl.jermey.githubviewer.widget.items.UserItem
-import java.util.*
+import android.databinding.ObservableLong
+import io.reactivex.subjects.PublishSubject
+import pl.jermey.githubviewer.model.RepositoryModel
+import pl.jermey.githubviewer.model.UserModel
+import pl.jermey.githubviewer.repository.GithubService
 
 
-class MainViewModel(private val webService: RestService) : ViewModel() {
-
-    private val comparator: Comparator<IItem<*, *>>? = kotlin.Comparator { t1, t2 -> t1.identifier.compareTo(t2.identifier) }
-    private val itemAdapter = ItemAdapter<IItem<*, *>>(ComparableItemListImpl<IItem<*, *>>(comparator))
-    private val footerAdapter: ItemAdapter<IItem<*, *>> = ItemAdapter()
+class MainViewModel(private val webService: GithubService) : ViewModel() {
 
     val empty: ObservableField<Boolean> = ObservableField(true)
     val emptyMessage: ObservableField<String> = ObservableField("No results")
-    var query: String = ""
     private var loading = false
+    var query: String = ""
+
     var currentPage = 0
-    var totalItemsCount = 0L
-    val adapter: FastAdapter<IItem<*, *>> = FastAdapter.with(listOf(itemAdapter, footerAdapter))
+    var totalItemsCount = ObservableLong(0L)
+    var repositories: List<RepositoryModel> = emptyList()
+    var users: List<UserModel> = emptyList()
+
+    val searchEvent: PublishSubject<SearchEvent> = PublishSubject.create()
 
     fun search(query: String, page: Int = 0) {
         if (loading || query.isBlank() || (query == this.query && page == 0)) return
-        loading = true
-        this.query = query
         if (page == 0) {
-            itemAdapter.clear()
-            currentPage = 0
-            totalItemsCount = 0L
+            searchEvent.onNext(SearchEvent(SearchEvent.Type.NEW_QUERY))
+            clearData()
         }
-        footerAdapter.add(LoadingItem())
+        this.query = query
+        loading = true
         empty.set(false)
+        searchEvent.onNext(SearchEvent(SearchEvent.Type.LOADING))
         webService.search(this.query, currentPage).subscribe({
             loading = false
-            footerAdapter.clear()
-            totalItemsCount = it.third
-            itemAdapter.add(it.first.map { RepositoryItem(it) })
-            itemAdapter.add(it.second.map { UserItem(it) })
+            totalItemsCount.set(it.third)
+            repositories += it.first
+            users += it.second
+            searchEvent.onNext(SearchEvent(SearchEvent.Type.SUCCESS))
             currentPage++
         }, {
-            it.printStackTrace()
-            loading = false
-            currentPage = 0
-            totalItemsCount = 0L
-            footerAdapter.clear()
-            itemAdapter.clear()
+            clearData()
             empty.set(true)
             emptyMessage.set("Connection error")
+            searchEvent.onNext(SearchEvent(SearchEvent.Type.ERROR, it))
         })
     }
 
+    private fun clearData() {
+        loading = false
+        query = ""
+        currentPage = 0
+        totalItemsCount.set(0L)
+        repositories = emptyList()
+        users = emptyList()
+    }
+
+}
+
+@Suppress("EqualsOrHashCode")
+data class SearchEvent(val type: Type,
+                       val error: Throwable? = null) {
+    enum class Type {
+        LOADING, SUCCESS, NEW_QUERY, ERROR
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return this.type == (other as SearchEvent).type
+    }
 }
